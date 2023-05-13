@@ -168,42 +168,47 @@ func convertMessageToMap(message *desc.MessageDescriptor) map[string]interface{}
 }
 
 // CallUnaryMethod 反射调用一元rpc方法
-func (r *RefServer) CallUnaryMethod(serviceName, methodName, jsonString string) (map[string]interface{}, error) {
+func (r *RefServer) CallUnaryMethod(serviceName, methodName, param string) (map[string]interface{}, error) {
+	// 获取方法描述符
 	methodDesc, err := getMethodDescriptor(r.RefClient, serviceName, methodName)
 	if err != nil {
 		return nil, err
 	}
 
-	req := dynamic.NewMessage(methodDesc.GetInputType())
-	req.UnmarshalJSON([]byte(jsonString))
+	// 使用grpcdynamic包中的NewStub方法创建了一个动态的gRPC客户端stub，可以通过这个stub来调用gRPC服务端中定义的方法。
 	stub := grpcdynamic.NewStub(r.channel)
 
-	resp, err := stub.InvokeRpc(context.Background(), methodDesc, req)
+	// 调用一元rpc方法
+	resp, err := stub.InvokeRpc(context.Background(), methodDesc, getProtoMessage(methodDesc, param))
 	if err != nil {
 		return nil, err
 	}
+
+	// 处理返回结果
 	return messageToMap(resp), nil
 }
 
 // CallServerStreamMethod 反射调用服务器端流式RPC方法
 func (r *RefServer) CallServerStreamMethod(serviceName, methodName, param string) ([]map[string]interface{}, error) {
+	// 获取方法描述符
 	methodDesc, err := getMethodDescriptor(r.RefClient, serviceName, methodName)
 	if err != nil {
 		return nil, err
 	}
 
-	req := dynamic.NewMessage(methodDesc.GetInputType())
-	req.UnmarshalJSON([]byte(param))
 	stub := grpcdynamic.NewStub(r.channel)
 
-	str, err := stub.InvokeRpcServerStream(context.Background(), methodDesc, req)
+	// 获取服务端流对象，serverStream对象可以用来接收服务端返回的多个响应结果。
+	serverStream, err := stub.InvokeRpcServerStream(context.Background(), methodDesc, getProtoMessage(methodDesc, param))
 	if err != nil {
 		return nil, err
 	}
-	ret := make([]map[string]interface{}, 0)
 
+	// 死循环接收服务端返回的消息
+	ret := make([]map[string]interface{}, 0)
 	for {
-		resp, err := str.RecvMsg()
+		var resp proto.Message
+		resp, err = serverStream.RecvMsg()
 		if err != nil {
 			if err == io.EOF {
 				return ret, nil
@@ -214,36 +219,51 @@ func (r *RefServer) CallServerStreamMethod(serviceName, methodName, param string
 	}
 }
 
+// CallClientStreamMethod 反射调用客户端流式RPC方法
 func (r *RefServer) CallClientStreamMethod(serviceName string, methodName string, params []string) (map[string]interface{}, error) {
+	// 获取方法描述符
 	methodDesc, err := getMethodDescriptor(r.RefClient, serviceName, methodName)
 	if err != nil {
 		return nil, err
 	}
 
+	// 获取客户端流对象
 	stub := grpcdynamic.NewStub(r.channel)
-	streamClient, err := stub.InvokeRpcClientStream(context.Background(), methodDesc)
+	clientStream, err := stub.InvokeRpcClientStream(context.Background(), methodDesc)
 	if err != nil {
 		return nil, err
 	}
-	var resp proto.Message
+
+	// 循环发送消息给服务端
 	for _, param := range params {
-		req := dynamic.NewMessage(methodDesc.GetInputType())
-		_ = req.UnmarshalJSON([]byte(param))
-		err = streamClient.SendMsg(req)
-		resp, err = streamClient.CloseAndReceive()
-		if err != nil {
+		if err = clientStream.SendMsg(getProtoMessage(methodDesc, param)); err != nil {
 			return nil, err
 		}
-		return messageToMap(resp), nil
-
 	}
-	return nil, nil
+	var resp proto.Message
+	resp, err = clientStream.CloseAndReceive()
+	if err != nil {
+		return nil, err
+	}
+	return messageToMap(resp), nil
 }
 
+// 解析grpc返回的数据
 func messageToMap(msg proto.Message) map[string]interface{} {
+	// *dynamic.Message类型是一个protobuf库提供的动态消息类型，可以方便地对消息进行操作。
+	// dMsg.MarshalJSON() 方法将消息转换成 JSON 格式的字节数组。
+	dMsg := msg.(*dynamic.Message)
+	jsonData, _ := dMsg.MarshalJSON()
 	res := make(map[string]interface{})
-	js := msg.(*dynamic.Message)
-	ty, _ := js.MarshalJSON()
-	_ = json.Unmarshal(ty, &res)
+	_ = json.Unmarshal(jsonData, &res)
 	return res
+}
+
+// json入参转换成proto格式的参数
+func getProtoMessage(methodDesc *desc.MethodDescriptor, param string) proto.Message {
+	// 使用dynamic.NewMessage方法创建了一个空的消息对象req，该消息对象的类型是从methodDesc中获取的该方法的输入类型。
+	// 接着，使用json.Unmarshal将json字符串解析到req中，填充请求消息的具体参数。
+	req := dynamic.NewMessage(methodDesc.GetInputType())
+	_ = req.UnmarshalJSON([]byte(param))
+	return req
 }
