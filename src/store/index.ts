@@ -103,7 +103,7 @@ const store = createStore<storeType>({
     setMenuVal(state, val) {
       for (let i = 0; i < state.menuVals.arr.length; i++) {
         if (state.menuVals.arr[i].key === val.key) {
-          state.menuVals.arr[i].childs = val.childs
+          state.menuVals.arr[i].services = val.childs
         }
       }
     },
@@ -113,7 +113,7 @@ const store = createStore<storeType>({
     },
     //
     deleteMenuChildVal(state, val) {
-      state.menuVals.arr[val.index].childs.splice(val.ci, 1)
+      state.menuVals.arr[val.index].services.splice(val.ci, 1)
     },
     //
     deleteMenuByKey(state, key) {

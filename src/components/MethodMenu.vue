@@ -271,7 +271,7 @@ const HandleSelect = (key: string | number, option: DropdownOption) => {
  * @constructor
  */
 const ClickTree = ({ option }: { option: TreeOption }) => {
-  let nodeType: string = Reflect.get(option, 'nodeType')
+  let nodeType = Reflect.get(option, 'nodeType')
   console.log('clickTree', nodeType)
   if (!(nodeType === 'method')) {
     return
