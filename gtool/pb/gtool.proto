@@ -8,7 +8,7 @@ import "validate/validate.proto";
 // 方法类型
 enum MethodType {
   Unary = 0;                  // 一元RPC
-  ServerStreaming = 1;        // 服务器端流式RPC
+  ServerStreaming = 1;        // 服务端流式RPC
   ClientStreaming = 2;        // 客户端流式RPC
   BidirectionalStreaming = 3; // 双向流式RPC
 }
@@ -36,49 +36,52 @@ message Method  {
   string output_type = 5;                // 输出类型
 }
 
+// 获取服务信息请求
 message ServerInfoReq {
   optional string url = 1 [(validate.rules).string = {min_len: 1, max_len: 100}];
 }
+// 获取服务信息响应
 message ServerInfoRsp {
   optional uint32 code = 1;
   optional string message = 2;
   optional Server data = 3;
 }
 
-
+// 获取方法入参请求
 message MethodParamReq {
   optional string url = 1 [(validate.rules).string = {min_len: 1, max_len: 100}]; // url
   optional string service_name = 2 [(validate.rules).string = {min_len: 1, max_len: 100}];  // 服务名称
   optional string method_name = 3 [(validate.rules).string = {min_len: 1, max_len: 100}];       // 方法名称
 }
-
+// 获取方法入参响应
 message MethodParamRsp {
   optional uint32 code = 1;
   optional string message = 2;
   optional string data = 3;
 }
 
-// 调用grpc接口
+// 调用一元RPC接口请求
 message CallMethodReq  {
   optional string url = 1;           // 地址
   optional string service_name = 2;  // 服务名
   optional string method_name = 3;   // 方法名
   optional string data = 4;          // 数据
 }
-
+// 调用一元RPC接口响应
 message CallMethodRsp {
   optional uint32 code = 1;
   optional string message = 2;
   optional string data = 3;
 }
 
+// 调用服务端流式RPC响应
 message CallServerStreamMethodRsp {
   optional uint32 code = 1;
   optional string message = 2;
   repeated string data = 3;
 }
 
-// 调用grpc接口
+// 调用客户端流式RPC请求
 message CallClientStreamMethodReq  {
   optional string url = 1;           // 地址
   optional string service_name = 2;  // 服务名
@@ -86,7 +89,7 @@ message CallClientStreamMethodReq  {
   repeated string data = 4;        // 数据
 }
 
-// 调用双向流式RPC
+// 调用双向流式RPC请求
 message CallBidirectionalStreamMethodReq  {
   optional string url = 1;           // 地址
   optional string service_name = 2;  // 服务名
@@ -94,7 +97,6 @@ message CallBidirectionalStreamMethodReq  {
   optional bool complete = 4;        // 是否结束调用
   repeated string data = 5;          // 数据
 }
-
 
 
 service GRPCTool {
@@ -105,7 +107,6 @@ service GRPCTool {
       body: "*"
     };
   };
-
   // 获取方法参数
   rpc MethodParam(MethodParamReq) returns(MethodParamRsp) {
     option (google.api.http) = {
@@ -113,7 +114,6 @@ service GRPCTool {
       body: "*"
     };
   };
-
   // 一元RPC
   rpc CallUnaryMethod(CallMethodReq) returns(CallMethodRsp) {
     option (google.api.http) = {
@@ -121,7 +121,6 @@ service GRPCTool {
       body: "*"
     };
   };
-
   // 服务器端流式RPC
   rpc CallServerStreamMethod(CallMethodReq) returns(CallServerStreamMethodRsp) {
     option (google.api.http) = {
@@ -129,7 +128,6 @@ service GRPCTool {
       body: "*"
     };
   };
-
   // 客户端流式RPC
   rpc CallClientStreamMethod(CallClientStreamMethodReq) returns(CallMethodRsp) {
     option (google.api.http) = {
@@ -137,7 +135,6 @@ service GRPCTool {
       body: "*"
     };
   };
-
   // 双向流式RPC
   rpc CallBidirectionalStreamMethod(CallBidirectionalStreamMethodReq) returns(CallServerStreamMethodRsp) {
     option (google.api.http) = {

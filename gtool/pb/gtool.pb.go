@@ -28,7 +28,7 @@ type MethodType int32
 
 const (
 	MethodType_Unary                  MethodType = 0 // 一元RPC
-	MethodType_ServerStreaming        MethodType = 1 // 服务器端流式RPC
+	MethodType_ServerStreaming        MethodType = 1 // 服务端流式RPC
 	MethodType_ClientStreaming        MethodType = 2 // 客户端流式RPC
 	MethodType_BidirectionalStreaming MethodType = 3 // 双向流式RPC
 )
@@ -284,6 +284,7 @@ func (x *Method) GetOutputType() string {
 	return ""
 }
 
+// 获取服务信息请求
 type ServerInfoReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -331,6 +332,7 @@ func (x *ServerInfoReq) GetUrl() string {
 	return ""
 }
 
+// 获取服务信息响应
 type ServerInfoRsp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -394,6 +396,7 @@ func (x *ServerInfoRsp) GetData() *Server {
 	return nil
 }
 
+// 获取方法入参请求
 type MethodParamReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -457,6 +460,7 @@ func (x *MethodParamReq) GetMethodName() string {
 	return ""
 }
 
+// 获取方法入参响应
 type MethodParamRsp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -520,7 +524,7 @@ func (x *MethodParamRsp) GetData() string {
 	return ""
 }
 
-// 调用grpc接口
+// 调用一元RPC接口请求
 type CallMethodReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -592,6 +596,7 @@ func (x *CallMethodReq) GetData() string {
 	return ""
 }
 
+// 调用一元RPC接口响应
 type CallMethodRsp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -655,6 +660,7 @@ func (x *CallMethodRsp) GetData() string {
 	return ""
 }
 
+// 调用服务端流式RPC响应
 type CallServerStreamMethodRsp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -718,7 +724,7 @@ func (x *CallServerStreamMethodRsp) GetData() []string {
 	return nil
 }
 
-// 调用grpc接口
+// 调用客户端流式RPC请求
 type CallClientStreamMethodReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -790,7 +796,7 @@ func (x *CallClientStreamMethodReq) GetData() []string {
 	return nil
 }
 
-// 调用双向流式RPC
+// 调用双向流式RPC请求
 type CallBidirectionalStreamMethodReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -248,6 +248,24 @@ func (r *RefServer) CallClientStreamMethod(serviceName string, methodName string
 	return messageToMap(resp), nil
 }
 
+// CallBidirectionalStreamMethod 双向流式RPC
+func (r *RefServer) CallBidirectionalStreamMethod(serviceName string, methodName string, params []string) ([]map[string]interface{}, error) {
+	// 获取方法描述符
+	// methodDesc, err := getMethodDescriptor(r.RefClient, serviceName, methodName)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	//
+	// // 获取双向流对象
+	// stub := grpcdynamic.NewStub(r.channel)
+	// bidiStream, err := stub.InvokeRpcBidiStream(context.Background(), methodDesc)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	return nil, nil
+}
+
 // 解析grpc返回的数据
 func messageToMap(msg proto.Message) map[string]interface{} {
 	// *dynamic.Message类型是一个protobuf库提供的动态消息类型，可以方便地对消息进行操作。

@@ -243,7 +243,7 @@
           "title": "数据"
         }
       },
-      "title": "调用双向流式RPC"
+      "title": "调用双向流式RPC请求"
     },
     "CallClientStreamMethodReq": {
       "type": "object",
@@ -268,7 +268,7 @@
           "title": "数据"
         }
       },
-      "title": "调用grpc接口"
+      "title": "调用客户端流式RPC请求"
     },
     "CallMethodReq": {
       "type": "object",
@@ -290,7 +290,7 @@
           "title": "数据"
         }
       },
-      "title": "调用grpc接口"
+      "title": "调用一元RPC接口请求"
     },
     "CallMethodRsp": {
       "type": "object",
@@ -305,7 +305,8 @@
         "data": {
           "type": "string"
         }
-      }
+      },
+      "title": "调用一元RPC接口响应"
     },
     "CallServerStreamMethodRsp": {
       "type": "object",
@@ -323,7 +324,8 @@
             "type": "string"
           }
         }
-      }
+      },
+      "title": "调用服务端流式RPC响应"
     },
     "Method": {
       "type": "object",
@@ -365,7 +367,8 @@
           "type": "string",
           "title": "方法名称"
         }
-      }
+      },
+      "title": "获取方法入参请求"
     },
     "MethodParamRsp": {
       "type": "object",
@@ -380,7 +383,8 @@
         "data": {
           "type": "string"
         }
-      }
+      },
+      "title": "获取方法入参响应"
     },
     "MethodType": {
       "type": "string",
@@ -391,7 +395,7 @@
         "BidirectionalStreaming"
       ],
       "default": "Unary",
-      "description": "- Unary: 一元RPC\n - ServerStreaming: 服务器端流式RPC\n - ClientStreaming: 客户端流式RPC\n - BidirectionalStreaming: 双向流式RPC",
+      "description": "- Unary: 一元RPC\n - ServerStreaming: 服务端流式RPC\n - ClientStreaming: 客户端流式RPC\n - BidirectionalStreaming: 双向流式RPC",
       "title": "方法类型"
     },
     "Server": {
@@ -421,7 +425,8 @@
         "url": {
           "type": "string"
         }
-      }
+      },
+      "title": "获取服务信息请求"
     },
     "ServerInfoRsp": {
       "type": "object",
@@ -436,7 +441,8 @@
         "data": {
           "$ref": "#/definitions/Server"
         }
-      }
+      },
+      "title": "获取服务信息响应"
     },
     "Service": {
       "type": "object",
