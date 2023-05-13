@@ -1,0 +1,431 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "gtool.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "GRPCTool"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/gRPCTool/call": {
+      "post": {
+        "summary": "调用grpc接口",
+        "operationId": "GRPCTool_CallUnaryMethod",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CallMethodRsp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CallMethodReq"
+            }
+          }
+        ],
+        "tags": [
+          "GRPCTool"
+        ]
+      }
+    },
+    "/gRPCTool/callClientStream": {
+      "post": {
+        "summary": "客户端流式RPC",
+        "operationId": "GRPCTool_CallClientStreamMethod",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CallMethodRsp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CallClientStreamMethodReq"
+            }
+          }
+        ],
+        "tags": [
+          "GRPCTool"
+        ]
+      }
+    },
+    "/gRPCTool/callServerStream": {
+      "post": {
+        "summary": "服务器端流式RPC",
+        "operationId": "GRPCTool_CallServerStreamMethod",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CallServerStreamMethodRsp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CallMethodReq"
+            }
+          }
+        ],
+        "tags": [
+          "GRPCTool"
+        ]
+      }
+    },
+    "/gRPCTool/methodParam": {
+      "post": {
+        "summary": "获取方法参数",
+        "operationId": "GRPCTool_MethodParam",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/MethodParamRsp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MethodParamReq"
+            }
+          }
+        ],
+        "tags": [
+          "GRPCTool"
+        ]
+      }
+    },
+    "/gRPCTool/serverInfo": {
+      "post": {
+        "summary": "获取服务信息",
+        "operationId": "GRPCTool_ServerInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ServerInfoRsp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ServerInfoReq"
+            }
+          }
+        ],
+        "tags": [
+          "GRPCTool"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "CallClientStreamMethodReq": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "title": "地址"
+        },
+        "service_name": {
+          "type": "string",
+          "title": "服务名"
+        },
+        "method_name": {
+          "type": "string",
+          "title": "方法名"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "数据"
+        }
+      },
+      "title": "调用grpc接口"
+    },
+    "CallMethodReq": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "title": "地址"
+        },
+        "service_name": {
+          "type": "string",
+          "title": "服务名"
+        },
+        "method_name": {
+          "type": "string",
+          "title": "方法名"
+        },
+        "data": {
+          "type": "string",
+          "title": "数据"
+        }
+      },
+      "title": "调用grpc接口"
+    },
+    "CallMethodRsp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        }
+      }
+    },
+    "CallServerStreamMethodRsp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Method": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "method_name": {
+          "type": "string",
+          "title": "方法名称"
+        },
+        "method_type": {
+          "$ref": "#/definitions/MethodType",
+          "title": "方法类型"
+        },
+        "input_type": {
+          "type": "string",
+          "title": "输入类型"
+        },
+        "output_type": {
+          "type": "string",
+          "title": "输出类型"
+        }
+      },
+      "title": "Method 方法"
+    },
+    "MethodParamReq": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "title": "url"
+        },
+        "service_name": {
+          "type": "string",
+          "title": "服务名称"
+        },
+        "method_name": {
+          "type": "string",
+          "title": "方法名称"
+        }
+      }
+    },
+    "MethodParamRsp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        }
+      }
+    },
+    "MethodType": {
+      "type": "string",
+      "enum": [
+        "Unary",
+        "ServerStreaming",
+        "ClientStreaming",
+        "BidirectionalStreaming"
+      ],
+      "default": "Unary",
+      "description": "- Unary: 一元RPC\n - ServerStreaming: 服务器端流式RPC\n - ClientStreaming: 客户端流式RPC\n - BidirectionalStreaming: 双向流式RPC",
+      "title": "方法类型"
+    },
+    "Server": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string",
+          "title": "ip:port"
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Service"
+          },
+          "title": "服务"
+        }
+      },
+      "title": "Server 服务"
+    },
+    "ServerInfoReq": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "ServerInfoRsp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/Server"
+        }
+      }
+    },
+    "Service": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "service_name": {
+          "type": "string",
+          "title": "服务名称"
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Method"
+          },
+          "title": "方法集合"
+        }
+      },
+      "title": "Service 服务提供者"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string",
+          "description": "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+        }
+      },
+      "additionalProperties": {},
+      "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(\u0026foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n\nExample 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\nExample 4: Pack and unpack a message in Go\n\n     foo := \u0026pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := \u0026pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\n\nJSON\n\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": \u003cstring\u003e,\n      \"lastName\": \u003cstring\u003e\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,130 @@
+syntax = "proto3";
+option go_package = ".;pb";
+
+import "google/api/annotations.proto";
+import "google/protobuf/any.proto";
+import "validate/validate.proto";
+
+// 方法类型
+enum MethodType {
+  Unary = 0;                  // 一元RPC
+  ServerStreaming = 1;        // 服务器端流式RPC
+  ClientStreaming = 2;        // 客户端流式RPC
+  BidirectionalStreaming = 3; // 双向流式RPC
+}
+
+// Server 服务
+message Server  {
+  optional string key = 1;
+  optional string url = 2;       // ip:port
+  repeated Service services = 3;  // 服务
+}
+
+// Service 服务提供者
+message Service  {
+  optional string key = 1;
+  optional string service_name = 2;  // 服务名称
+  repeated Method methods = 3;      // 方法集合
+}
+
+// Method 方法
+message Method  {
+  optional string key = 1;
+  optional string method_name = 2;       // 方法名称
+  optional MethodType method_type = 3;   // 方法类型
+  string input_type = 4;                 // 输入类型
+  string output_type = 5;                // 输出类型
+}
+
+message ServerInfoReq {
+  optional string url = 1 [(validate.rules).string = {min_len: 1, max_len: 100}];
+}
+message ServerInfoRsp {
+  optional uint32 code = 1;
+  optional string message = 2;
+  optional Server data = 3;
+}
+
+
+message MethodParamReq {
+  optional string url = 1 [(validate.rules).string = {min_len: 1, max_len: 100}]; // url
+  optional string service_name = 2 [(validate.rules).string = {min_len: 1, max_len: 100}];  // 服务名称
+  optional string method_name = 3 [(validate.rules).string = {min_len: 1, max_len: 100}];       // 方法名称
+}
+
+message MethodParamRsp {
+  optional uint32 code = 1;
+  optional string message = 2;
+  optional string data = 3;
+}
+
+// 调用grpc接口
+message CallMethodReq  {
+  optional string url = 1;           // 地址
+  optional string service_name = 2;  // 服务名
+  optional string method_name = 3;   // 方法名
+  optional string data = 4;          // 数据
+}
+
+message CallMethodRsp {
+  optional uint32 code = 1;
+  optional string message = 2;
+  optional string data = 3;
+}
+
+message CallServerStreamMethodRsp {
+  optional uint32 code = 1;
+  optional string message = 2;
+  repeated string data = 3;
+}
+
+// 调用grpc接口
+message CallClientStreamMethodReq  {
+  optional string url = 1;           // 地址
+  optional string service_name = 2;  // 服务名
+  optional string method_name = 3;   // 方法名
+  repeated string data = 4;        // 数据
+}
+
+service GRPCTool {
+  // 获取服务信息
+  rpc ServerInfo(ServerInfoReq) returns(ServerInfoRsp) {
+    option (google.api.http) = {
+      post: "/gRPCTool/serverInfo"
+      body: "*"
+    };
+  };
+
+  // 获取方法参数
+  rpc MethodParam(MethodParamReq) returns(MethodParamRsp) {
+    option (google.api.http) = {
+      post: "/gRPCTool/methodParam"
+      body: "*"
+    };
+  };
+
+  // 一元RPC
+  rpc CallUnaryMethod(CallMethodReq) returns(CallMethodRsp) {
+    option (google.api.http) = {
+      post: "/gRPCTool/call"
+      body: "*"
+    };
+  };
+
+  // 服务器端流式RPC
+  rpc CallServerStreamMethod(CallMethodReq) returns(CallServerStreamMethodRsp) {
+    option (google.api.http) = {
+      post: "/gRPCTool/callServerStream"
+      body: "*"
+    };
+  };
+
+  // 客户端流式RPC
+  rpc CallClientStreamMethod(CallClientStreamMethodReq) returns(CallMethodRsp) {
+    option (google.api.http) = {
+      post: "/gRPCTool/callClientStream"
+      body: "*"
+    };
+  };
+
+}
