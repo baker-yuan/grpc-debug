@@ -18,7 +18,7 @@
   "paths": {
     "/gRPCTool/call": {
       "post": {
-        "summary": "调用grpc接口",
+        "summary": "一元RPC",
         "operationId": "GRPCTool_CallUnaryMethod",
         "responses": {
           "200": {
@@ -41,6 +41,39 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/CallMethodReq"
+            }
+          }
+        ],
+        "tags": [
+          "GRPCTool"
+        ]
+      }
+    },
+    "/gRPCTool/callBidirectionalStream": {
+      "post": {
+        "summary": "双向流式RPC",
+        "operationId": "GRPCTool_CallBidirectionalStreamMethod",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CallServerStreamMethodRsp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CallBidirectionalStreamMethodReq"
             }
           }
         ],
@@ -183,6 +216,35 @@
     }
   },
   "definitions": {
+    "CallBidirectionalStreamMethodReq": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "title": "地址"
+        },
+        "service_name": {
+          "type": "string",
+          "title": "服务名"
+        },
+        "method_name": {
+          "type": "string",
+          "title": "方法名"
+        },
+        "complete": {
+          "type": "boolean",
+          "title": "是否结束调用"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "数据"
+        }
+      },
+      "title": "调用双向流式RPC"
+    },
     "CallClientStreamMethodReq": {
       "type": "object",
       "properties": {

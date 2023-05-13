@@ -86,6 +86,17 @@ message CallClientStreamMethodReq  {
   repeated string data = 4;        // 数据
 }
 
+// 调用双向流式RPC
+message CallBidirectionalStreamMethodReq  {
+  optional string url = 1;           // 地址
+  optional string service_name = 2;  // 服务名
+  optional string method_name = 3;   // 方法名
+  optional bool complete = 4;        // 是否结束调用
+  repeated string data = 5;          // 数据
+}
+
+
+
 service GRPCTool {
   // 获取服务信息
   rpc ServerInfo(ServerInfoReq) returns(ServerInfoRsp) {
@@ -123,6 +134,14 @@ service GRPCTool {
   rpc CallClientStreamMethod(CallClientStreamMethodReq) returns(CallMethodRsp) {
     option (google.api.http) = {
       post: "/gRPCTool/callClientStream"
+      body: "*"
+    };
+  };
+
+  // 双向流式RPC
+  rpc CallBidirectionalStreamMethod(CallBidirectionalStreamMethodReq) returns(CallServerStreamMethodRsp) {
+    option (google.api.http) = {
+      post: "/gRPCTool/callBidirectionalStream"
       body: "*"
     };
   };

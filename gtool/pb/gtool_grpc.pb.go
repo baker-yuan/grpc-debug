@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	GRPCTool_ServerInfo_FullMethodName             = "/GRPCTool/ServerInfo"
-	GRPCTool_MethodParam_FullMethodName            = "/GRPCTool/MethodParam"
-	GRPCTool_CallUnaryMethod_FullMethodName        = "/GRPCTool/CallUnaryMethod"
-	GRPCTool_CallServerStreamMethod_FullMethodName = "/GRPCTool/CallServerStreamMethod"
-	GRPCTool_CallClientStreamMethod_FullMethodName = "/GRPCTool/CallClientStreamMethod"
+	GRPCTool_ServerInfo_FullMethodName                    = "/GRPCTool/ServerInfo"
+	GRPCTool_MethodParam_FullMethodName                   = "/GRPCTool/MethodParam"
+	GRPCTool_CallUnaryMethod_FullMethodName               = "/GRPCTool/CallUnaryMethod"
+	GRPCTool_CallServerStreamMethod_FullMethodName        = "/GRPCTool/CallServerStreamMethod"
+	GRPCTool_CallClientStreamMethod_FullMethodName        = "/GRPCTool/CallClientStreamMethod"
+	GRPCTool_CallBidirectionalStreamMethod_FullMethodName = "/GRPCTool/CallBidirectionalStreamMethod"
 )
 
 // GRPCToolClient is the client API for GRPCTool service.
@@ -34,12 +35,14 @@ type GRPCToolClient interface {
 	ServerInfo(ctx context.Context, in *ServerInfoReq, opts ...grpc.CallOption) (*ServerInfoRsp, error)
 	// 获取方法参数
 	MethodParam(ctx context.Context, in *MethodParamReq, opts ...grpc.CallOption) (*MethodParamRsp, error)
-	// 调用grpc接口
+	// 一元RPC
 	CallUnaryMethod(ctx context.Context, in *CallMethodReq, opts ...grpc.CallOption) (*CallMethodRsp, error)
 	// 服务器端流式RPC
 	CallServerStreamMethod(ctx context.Context, in *CallMethodReq, opts ...grpc.CallOption) (*CallServerStreamMethodRsp, error)
 	// 客户端流式RPC
 	CallClientStreamMethod(ctx context.Context, in *CallClientStreamMethodReq, opts ...grpc.CallOption) (*CallMethodRsp, error)
+	// 双向流式RPC
+	CallBidirectionalStreamMethod(ctx context.Context, in *CallBidirectionalStreamMethodReq, opts ...grpc.CallOption) (*CallServerStreamMethodRsp, error)
 }
 
 type gRPCToolClient struct {
@@ -95,6 +98,15 @@ func (c *gRPCToolClient) CallClientStreamMethod(ctx context.Context, in *CallCli
 	return out, nil
 }
 
+func (c *gRPCToolClient) CallBidirectionalStreamMethod(ctx context.Context, in *CallBidirectionalStreamMethodReq, opts ...grpc.CallOption) (*CallServerStreamMethodRsp, error) {
+	out := new(CallServerStreamMethodRsp)
+	err := c.cc.Invoke(ctx, GRPCTool_CallBidirectionalStreamMethod_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GRPCToolServer is the server API for GRPCTool service.
 // All implementations must embed UnimplementedGRPCToolServer
 // for forward compatibility
@@ -103,12 +115,14 @@ type GRPCToolServer interface {
 	ServerInfo(context.Context, *ServerInfoReq) (*ServerInfoRsp, error)
 	// 获取方法参数
 	MethodParam(context.Context, *MethodParamReq) (*MethodParamRsp, error)
-	// 调用grpc接口
+	// 一元RPC
 	CallUnaryMethod(context.Context, *CallMethodReq) (*CallMethodRsp, error)
 	// 服务器端流式RPC
 	CallServerStreamMethod(context.Context, *CallMethodReq) (*CallServerStreamMethodRsp, error)
 	// 客户端流式RPC
 	CallClientStreamMethod(context.Context, *CallClientStreamMethodReq) (*CallMethodRsp, error)
+	// 双向流式RPC
+	CallBidirectionalStreamMethod(context.Context, *CallBidirectionalStreamMethodReq) (*CallServerStreamMethodRsp, error)
 	mustEmbedUnimplementedGRPCToolServer()
 }
 
@@ -130,6 +144,9 @@ func (UnimplementedGRPCToolServer) CallServerStreamMethod(context.Context, *Call
 }
 func (UnimplementedGRPCToolServer) CallClientStreamMethod(context.Context, *CallClientStreamMethodReq) (*CallMethodRsp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CallClientStreamMethod not implemented")
+}
+func (UnimplementedGRPCToolServer) CallBidirectionalStreamMethod(context.Context, *CallBidirectionalStreamMethodReq) (*CallServerStreamMethodRsp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CallBidirectionalStreamMethod not implemented")
 }
 func (UnimplementedGRPCToolServer) mustEmbedUnimplementedGRPCToolServer() {}
 
@@ -234,6 +251,24 @@ func _GRPCTool_CallClientStreamMethod_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GRPCTool_CallBidirectionalStreamMethod_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CallBidirectionalStreamMethodReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GRPCToolServer).CallBidirectionalStreamMethod(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GRPCTool_CallBidirectionalStreamMethod_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GRPCToolServer).CallBidirectionalStreamMethod(ctx, req.(*CallBidirectionalStreamMethodReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // GRPCTool_ServiceDesc is the grpc.ServiceDesc for GRPCTool service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -260,6 +295,10 @@ var GRPCTool_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CallClientStreamMethod",
 			Handler:    _GRPCTool_CallClientStreamMethod_Handler,
+		},
+		{
+			MethodName: "CallBidirectionalStreamMethod",
+			Handler:    _GRPCTool_CallBidirectionalStreamMethod_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
