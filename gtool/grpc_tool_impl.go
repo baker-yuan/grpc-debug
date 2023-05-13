@@ -92,6 +92,24 @@ func (o GRPCToolImpl) CallClientStreamMethod(ctx context.Context, req *pb.CallCl
 	return rsp, err
 }
 
+func (o GRPCToolImpl) CallBidirectionalStreamMethod(ctx context.Context, req *pb.CallBidirectionalStreamMethodReq) (*pb.CallServerStreamMethodRsp, error) {
+	datas, err := o.logicAPI.CallBidirectionalStreamMethod(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	var res = make([]string, 0)
+	for _, v := range datas {
+		res = append(res, objToJson(ctx, v))
+	}
+
+	rsp := &pb.CallServerStreamMethodRsp{
+		Data:    res,
+		Code:    proto.Uint32(http.StatusOK),
+		Message: proto.String(http.StatusText(http.StatusOK)),
+	}
+	return rsp, err
+}
+
 func objToJson(ctx context.Context, obj any) string {
 	b, err := json.Marshal(obj)
 	if err != nil {

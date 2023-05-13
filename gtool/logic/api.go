@@ -17,6 +17,8 @@ type API interface {
 	CallServerStreamMethod(ctx context.Context, in *pb.CallMethodReq) ([]map[string]interface{}, error)
 	// CallClientStreamMethod 客户端流式RPC
 	CallClientStreamMethod(context.Context, *pb.CallClientStreamMethodReq) (map[string]interface{}, error)
+	// CallBidirectionalStreamMethod 双向流式RPC
+	CallBidirectionalStreamMethod(ctx context.Context, req *pb.CallBidirectionalStreamMethodReq) ([]map[string]interface{}, error)
 }
 
 // New 实例化
