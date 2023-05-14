@@ -13,6 +13,9 @@
                 :key="panel"
                 :name="panel"
                 display-directive="show">
+      <div class="top" v-if="methodInfo">
+        {{ methodInfo }}
+      </div>
       <div class="content">
         <!-- 请求 -->
         <div class="left">
@@ -62,6 +65,8 @@ const closable = computed(() => {
   return panels.length > 1
 })
 
+let methodInfo = ref<{exist: boolean, server: server, service: service, method:method}>()
+
 // 加载顶部tab栏
 onMounted(() => {
   let tabs = store.getters.getTabVal
@@ -86,6 +91,10 @@ const getBodyById = (id) => {
 
 // 根据id查询参数
 const getCallParamById = (id) => {
+  let notExist = {exist: false, server: undefined, service: undefined, method: undefined}
+  if (!id) {
+    return notExist;
+  }
   let servers: server[] = store.getters.getMenuVal
   for (let i = 0; i < servers.length; i ++) {
     let server: server = servers[i]
@@ -94,12 +103,12 @@ const getCallParamById = (id) => {
       for (let k = 0; k < service.methods.length; k++) {
         let method: method = service.methods[k]
         if (method.key === id) {
-          return {server: server, service: service, method: method}
+          return {exist: true, server: server, service: service, method: method}
         }
       }
     }
   }
-  return {server: undefined, service: undefined, method: undefined, body: undefined}
+  return notExist
 }
 
 // 获取方法入参
@@ -141,7 +150,7 @@ const handleAdd = (name: string, b: boolean) => {
   GetParam(service.serviceName, method.methodName, server.url, method.key)
 }
 
-
+// 处理tab关闭
 const handleClose = (name: string) => {
   const nameIndex = panels.findIndex((panelName) => panelName === name)
   if (!~nameIndex) return
@@ -157,6 +166,7 @@ const changeVal = (name: string) => {
   pvalue.value = panels[index]
 }
 
+// 设置返回值
 const setReturn = (key, res) => {
   let st = store.getters.getReturnVal
   if (st.length === 0) {
@@ -181,22 +191,14 @@ const setReturn = (key, res) => {
   loading.value = false
 }
 
-// 发送请求
+// 请求后端服务
 const RequestForm = () => {
   let { server, service, method } = getCallParamById(pvalue.value)
   let body = getBodyById(pvalue.value)
   query(service.serviceName, method.methodName, server.url, body, pvalue.value)
 }
 
-/**
- * 请求后端服务
- *
- * @param serviceName 服务名
- * @param methodName 方法名称
- * @param url ip:port
- * @param data data
- * @param key key
- */
+// 请求后端服务
 const query = async (serviceName, methodName, url, data, key) => {
   loading.value = true
   try {
@@ -218,6 +220,12 @@ const query = async (serviceName, methodName, url, data, key) => {
 
 // 监听tab打开事件
 watch(() => store.getters.getNewTab, (newVal: string, oldVal) => {
+  let v = getCallParamById(newVal)
+  if (v && v.exist) {
+    methodInfo.value = v;
+  }
+
+
   let tabs = store.getters.getTabVal
   console.log('tabs watch', tabs, newVal)
   for (let i = 0; i < tabs.length; i++) {

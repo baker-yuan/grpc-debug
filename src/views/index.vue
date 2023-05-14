@@ -10,13 +10,13 @@
         </div>
       </div>
       <div class="title-right">
+        <!--  -->
         <div class="right-icon-min right-icon" @click="minApp">
           <n-icon size="1.3rem">
             <RemoveOutline/>
           </n-icon>
-
         </div>
-
+        <!--  -->
         <div class="right-icon-close right-icon" @click="quitApp">
           <n-icon size="1.3rem">
             <CloseOutline/>
