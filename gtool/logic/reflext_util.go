@@ -249,21 +249,54 @@ func (r *RefServer) CallClientStreamMethod(serviceName string, methodName string
 }
 
 // CallBidirectionalStreamMethod 双向流式RPC
-func (r *RefServer) CallBidirectionalStreamMethod(serviceName string, methodName string, params []string) ([]map[string]interface{}, error) {
+func (r *RefServer) CallBidirectionalStreamMethod(serviceName string, methodName string, params []string, complete bool) ([]map[string]interface{}, error) {
 	// 获取方法描述符
-	// methodDesc, err := getMethodDescriptor(r.RefClient, serviceName, methodName)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	//
-	// // 获取双向流对象
-	// stub := grpcdynamic.NewStub(r.channel)
-	// bidiStream, err := stub.InvokeRpcBidiStream(context.Background(), methodDesc)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	methodDesc, err := getMethodDescriptor(r.RefClient, serviceName, methodName)
+	if err != nil {
+		return nil, err
+	}
 
-	return nil, nil
+	// 获取双向流对象
+	stub := grpcdynamic.NewStub(r.channel)
+	bidiStream, err := stub.InvokeRpcBidiStream(context.Background(), methodDesc)
+	if err != nil {
+		return nil, err
+	}
+
+	// 点击停止发送请求
+	if complete {
+		err = bidiStream.CloseSend()
+		if err != nil {
+			return nil, err
+		}
+		return nil, nil
+	}
+
+	// 循环发送消息给服务端
+	for _, param := range params {
+		if err = bidiStream.SendMsg(getProtoMessage(methodDesc, param)); err != nil {
+			return nil, err
+		}
+	}
+
+	// 死循环接收服务端返回的消息
+	ret := make([]map[string]interface{}, 0)
+	for {
+		var resp proto.Message
+		// BidiStream.RecvMsg 方法是一个阻塞方法，它会等待直到收到下一个消息。
+		// 如果你调用该方法后程序一直没有收到消息，那么该方法就会一直阻塞住程序，直到收到消息或者超时。
+		// 如果你希望在等待消息的同时可以处理其他的任务，可以考虑使用异步方法，如BidiStream.ReadAsync()方法。该方法可以在等待消息的同时处理其他的任务，当收到消息时返回一个Task对象，你可以通过该对象来获取收到的消息。
+		// 另外，你也可以在调用BidiStream.RecvMsg方法时设置超时时间，如果在指定的时间内没有收到消息，该方法会自动返回一个空消息。这可以避免程序被永久地阻塞住。
+		resp, err = bidiStream.RecvMsg()
+		if err != nil {
+			if err == io.EOF {
+				return ret, nil
+			}
+			return nil, err
+		}
+		ret = append(ret, messageToMap(resp))
+	}
+
 }
 
 // 解析grpc返回的数据

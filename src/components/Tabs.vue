@@ -132,7 +132,7 @@ const GetParam = async (serviceName, methodName, url, key) => {
   }
 }
 
-//
+// 处理tab打开
 const handleAdd = (name: string, b: boolean) => {
   if (panels.length === 1 && panels[0] === 'undefined') {
     store.commit('setUndefined')
@@ -161,7 +161,13 @@ const handleClose = (name: string) => {
   }
 }
 
+// tab切换
 const changeVal = (name: string) => {
+  let v = getCallParamById(name)
+  if (v && v.exist) {
+    methodInfo.value = v;
+  }
+
   const index = panels.findIndex((panelName) => panelName === name)
   pvalue.value = panels[index]
 }
@@ -224,7 +230,6 @@ watch(() => store.getters.getNewTab, (newVal: string, oldVal) => {
   if (v && v.exist) {
     methodInfo.value = v;
   }
-
 
   let tabs = store.getters.getTabVal
   console.log('tabs watch', tabs, newVal)

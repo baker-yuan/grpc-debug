@@ -83,5 +83,5 @@ func (g gRPCToolImpl) CallBidirectionalStreamMethod(ctx context.Context, req *pb
 			delete(refClientCache, req.GetUrl())
 		}()
 	}
-	return refClient.CallBidirectionalStreamMethod(req.GetServiceName(), req.GetMethodName(), req.GetData())
+	return refClient.CallBidirectionalStreamMethod(req.GetServiceName(), req.GetMethodName(), req.GetData(), req.GetComplete())
 }
