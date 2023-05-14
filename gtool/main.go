@@ -4,11 +4,14 @@ import (
 	"context"
 	"gRpcTool/middleware"
 	"gRpcTool/pb"
+	"gRpcTool/pb/swagger"
 	"log"
 	"net"
 	"net/http"
+	"path"
 	"strings"
 
+	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -40,6 +43,10 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("/", gwmux)
 
+	// 文档
+	// mux.HandleFunc("/swagger/", swaggerFile)
+	// swaggerUI(mux)
+
 	// 定义HTTP server配置
 	gwServer := &http.Server{
 		Addr:    "127.0.0.1:10580",
@@ -67,4 +74,29 @@ func grpcHandlerFunc(grpcServer *grpc.Server, otherHandler http.Handler) http.Ha
 			otherHandler.ServeHTTP(w, r)
 		}
 	}), &http2.Server{})
+}
+
+// serveSwaggerUI: 提供UI支持
+func swaggerUI(mux *http.ServeMux) {
+	fileServer := http.FileServer(&assetfs.AssetFS{
+		Asset:    swagger.Asset,
+		AssetDir: swagger.AssetDir,
+		Prefix:   "third_party/swagger-ui",
+	})
+	prefix := "/swagger-ui/"
+	mux.Handle(prefix, http.StripPrefix(prefix, fileServer))
+}
+
+// swaggerFile: 提供对swagger.json文件的访问支持
+func swaggerFile(w http.ResponseWriter, r *http.Request) {
+	if !strings.HasSuffix(r.URL.Path, "swagger.json") {
+		log.Printf("Not Found: %s", r.URL.Path)
+		http.NotFound(w, r)
+		return
+	}
+
+	p := strings.TrimPrefix(r.URL.Path, "/swagger/")
+	name := path.Join("pb", p)
+	log.Printf("serving swagger-file: %s", name)
+	http.ServeFile(w, r, name)
 }

@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"gRpcTool/pb"
+	"gRpcTool/util"
 )
 
 type gRPCToolImpl struct {
@@ -13,7 +14,7 @@ func newGRPCToolImpl() *gRPCToolImpl {
 }
 
 func (g gRPCToolImpl) ServerInfo(ctx context.Context, req *pb.ServerInfoReq) (*pb.Server, error) {
-	refClient, err := NewRefServer(ctx, req.GetUrl())
+	refClient, err := util.NewRefServer(ctx, req.GetUrl())
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +27,7 @@ func (g gRPCToolImpl) ServerInfo(ctx context.Context, req *pb.ServerInfoReq) (*p
 }
 
 func (g gRPCToolImpl) MethodParam(ctx context.Context, req *pb.MethodParamReq) (map[string]interface{}, error) {
-	refClient, err := NewRefServer(ctx, req.GetUrl())
+	refClient, err := util.NewRefServer(ctx, req.GetUrl())
 	if err != nil {
 		return nil, err
 	}
@@ -35,16 +36,26 @@ func (g gRPCToolImpl) MethodParam(ctx context.Context, req *pb.MethodParamReq) (
 }
 
 func (g gRPCToolImpl) CallUnaryMethod(ctx context.Context, req *pb.CallMethodReq) (map[string]interface{}, error) {
-	refClient, err := NewRefServer(ctx, req.GetUrl())
+	// 更底层一点的方式
+	// refClient, err := util.NewRefServer(ctx, req.GetUrl())
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// defer refClient.Close()
+	// return refClient.CallUnaryMethod(req.GetServiceName(), req.GetMethodName(), req.GetData())
+
+	// 通过grpcurl
+	refClient, err := util.NewGrpcUrl(ctx, req.GetUrl())
 	if err != nil {
 		return nil, err
 	}
 	defer refClient.Close()
-	return refClient.CallUnaryMethod(req.GetServiceName(), req.GetMethodName(), req.GetData())
+	return refClient.CallUnaryMethod(ctx, req.GetServiceName(), req.GetMethodName(), req.GetData())
+
 }
 
 func (g gRPCToolImpl) CallServerStreamMethod(ctx context.Context, req *pb.CallMethodReq) ([]map[string]interface{}, error) {
-	refClient, err := NewRefServer(ctx, req.GetUrl())
+	refClient, err := util.NewRefServer(ctx, req.GetUrl())
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +64,7 @@ func (g gRPCToolImpl) CallServerStreamMethod(ctx context.Context, req *pb.CallMe
 }
 
 func (g gRPCToolImpl) CallClientStreamMethod(ctx context.Context, req *pb.CallClientStreamMethodReq) (map[string]interface{}, error) {
-	refClient, err := NewRefServer(ctx, req.GetUrl())
+	refClient, err := util.NewRefServer(ctx, req.GetUrl())
 	if err != nil {
 		return nil, err
 	}
@@ -62,15 +73,15 @@ func (g gRPCToolImpl) CallClientStreamMethod(ctx context.Context, req *pb.CallCl
 }
 
 // 客户端缓存 key=url value=RefServer
-var refClientCache = make(map[string]*RefServer, 0)
+var refClientCache = make(map[string]*util.RefServer, 0)
 
 func (g gRPCToolImpl) CallBidirectionalStreamMethod(ctx context.Context, req *pb.CallBidirectionalStreamMethodReq) ([]map[string]interface{}, error) {
 	// 从缓存中获取
-	var refClient *RefServer
+	var refClient *util.RefServer
 	if _, exist := refClientCache[req.GetUrl()]; exist {
 		refClient = refClientCache[req.GetUrl()]
 	} else {
-		c, err := NewRefServer(ctx, req.GetUrl())
+		c, err := util.NewRefServer(ctx, req.GetUrl())
 		if err != nil {
 			return nil, err
 		}

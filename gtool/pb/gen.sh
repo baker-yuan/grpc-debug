@@ -10,6 +10,9 @@ protoc \
 --openapiv2_out ${OUT} \
 --grpc-gateway_out=${OUT} \
 --validate_out="lang=go:./" \
+--openapiv2_out ./docs/ \
 --openapiv2_opt logtostderr=true \
 --openapiv2_opt json_names_for_fields=false \
 gtool.proto
+
+go-bindata --nocompress -pkg swagger -o swagger/datafile.go docs/...
