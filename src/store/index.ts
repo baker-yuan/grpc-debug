@@ -12,25 +12,25 @@ export interface storeType {
 
 // 左侧菜单
 export interface menuArrType {
-  arr: server[]
+  arr: serverType[]
 }
 
 // 服务
-export interface server {
+export interface serverType {
   key: string
   url: string         // url ip:port
-  services: service[] // 服务提供者
+  services: serviceType[] // 服务提供者
 }
 
 // 服务提供者
-export interface service {
+export interface serviceType {
   key: string
   serviceName: string
-  methods: method[]
+  methods: methodType[]
 }
 
 // 方法
-export interface method {
+export interface methodType {
   key: string
   methodName: string
   method_type: number
@@ -96,7 +96,7 @@ const store = createStore<storeType>({
       }
     },
     // 添加左侧菜单(服务信息)
-    addMenuVal(state, val: server) {
+    addMenuVal(state, val: serverType) {
       state.menuVals.arr.push(val)
     },
     // 设置左侧菜单

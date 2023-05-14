@@ -36,7 +36,7 @@ import { InformationCircleOutline, ReceiptOutline, Infinite, List, GitNetwork, L
 import TreeNode from '../types/treenodes'
 import useVStore from '../api/useVStore'
 import { AddFile, SetFile, GetMethodParam } from '../types/request'
-import { server, service, jsonType } from '../store'
+import { serverType, serviceType, jsonType } from '../store'
 
 const notification = useNotification()
 const store = useVStore()

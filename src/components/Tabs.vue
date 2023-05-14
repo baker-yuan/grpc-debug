@@ -53,7 +53,7 @@ import {CaretForward} from '@vicons/ionicons5'
 import Editor from './Editor.vue'
 import useVStore from '../api/useVStore';
 import {GetMethodParam, Query} from '../types/request'
-import {jsonType, method, server, service} from '../store'
+import {jsonType, methodType, serverType, serviceType} from '../store'
 import {useNotification} from 'naive-ui';
 
 const notification = useNotification()
@@ -65,7 +65,7 @@ const closable = computed(() => {
   return panels.length > 1
 })
 
-let methodInfo = ref<{exist: boolean, server: server, service: service, method:method}>()
+let methodInfo = ref<{exist: boolean, server: serverType, service: serviceType, method:methodType}>()
 
 // 加载顶部tab栏
 onMounted(() => {
@@ -95,13 +95,13 @@ const getCallParamById = (id) => {
   if (!id) {
     return notExist;
   }
-  let servers: server[] = store.getters.getMenuVal
+  let servers: serverType[] = store.getters.getMenuVal
   for (let i = 0; i < servers.length; i ++) {
-    let server: server = servers[i]
+    let server: serverType = servers[i]
     for (let j = 0; j < server.services.length; j++) {
-      let service: service = server.services[j]
+      let service: serviceType = server.services[j]
       for (let k = 0; k < service.methods.length; k++) {
-        let method: method = service.methods[k]
+        let method: methodType = service.methods[k]
         if (method.key === id) {
           return {exist: true, server: server, service: service, method: method}
         }

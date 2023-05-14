@@ -46,7 +46,7 @@ import {onMounted, ref} from 'vue'
 import {AddFile, SetFile} from '../types/request'
 import {useNotification} from 'naive-ui';
 import useVStore from '../api/useVStore';
-import {server, service} from '../store'
+import {serverType, serviceType} from '../store'
 
 const store = useVStore()
 const notification = useNotification()
@@ -63,7 +63,7 @@ const AddLink = async () => {
     const {
       data: res
     } = await AddFile(address.value)
-    let servers: server[] = store.getters.getMenuVal
+    let servers: serverType[] = store.getters.getMenuVal
     let da = res.data
     // 判断重复添加
     for (let i = 0; i < servers.length; i++) {
@@ -80,7 +80,7 @@ const AddLink = async () => {
     }
 
     // 存储
-    let server: server = da
+    let server: serverType = da
     console.log('addMenuVal', server)
     store.commit('addMenuVal', server)
     setFile()
