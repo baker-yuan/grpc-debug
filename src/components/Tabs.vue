@@ -14,7 +14,7 @@
                 :name="panel"
                 display-directive="show">
       <div class="top" v-if="methodInfo">
-        {{ methodInfo }}
+        {{ methodInfo.method.methodType }}
       </div>
       <div class="content">
         <!-- 请求 -->
@@ -53,7 +53,7 @@ import {CaretForward} from '@vicons/ionicons5'
 import Editor from './Editor.vue'
 import useVStore from '../api/useVStore';
 import {GetMethodParam, Query} from '../types/request'
-import {jsonType, methodType, serverType, serviceType} from '../store'
+import {jsonType, methodInfoType, serverType, serviceType} from '../store'
 import {useNotification} from 'naive-ui';
 
 const notification = useNotification()
@@ -65,7 +65,7 @@ const closable = computed(() => {
   return panels.length > 1
 })
 
-let methodInfo = ref<{exist: boolean, server: serverType, service: serviceType, method:methodType}>()
+let methodInfo = ref<{exist: boolean, server: serverType, service: serviceType, method: methodInfoType}>()
 
 // 加载顶部tab栏
 onMounted(() => {
@@ -101,7 +101,7 @@ const getCallParamById = (id) => {
     for (let j = 0; j < server.services.length; j++) {
       let service: serviceType = server.services[j]
       for (let k = 0; k < service.methods.length; k++) {
-        let method: methodType = service.methods[k]
+        let method: methodInfoType = service.methods[k]
         if (method.key === id) {
           return {exist: true, server: server, service: service, method: method}
         }

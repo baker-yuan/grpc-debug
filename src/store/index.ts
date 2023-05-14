@@ -26,14 +26,14 @@ export interface serverType {
 export interface serviceType {
   key: string
   serviceName: string
-  methods: methodType[]
+  methods: methodInfoType[]
 }
 
 // 方法
-export interface methodType {
+export interface methodInfoType {
   key: string
   methodName: string
-  method_type: number
+  methodType: number
   inputType: string
   outputType: string
 }
