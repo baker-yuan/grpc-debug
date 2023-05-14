@@ -57,24 +57,29 @@ var (
 
 // CallUnaryMethod 反射调用一元rpc方法
 func (r *GrpcUrl) CallUnaryMethod(ctx context.Context, serviceName, methodName, param string) (map[string]interface{}, error) {
+	// RequestParserAndFormatter，用于解析和格式化请求数据。这里使用的是 JSON 格式。
 	rf, formatter, err := grpcurl.RequestParserAndFormatter(grpcurl.FormatJSON, r.refSource, strings.NewReader(param), options)
 	if err != nil {
 		return nil, err
 	}
 	// 元数据
 	var md []string
-	// 响应
+	// Response对象，用于存储gRPC的响应数据
 	response := NewResponse()
+	// DefaultEventHandler 对象，该对象实现了 grpcurl 的事件处理接口。
+	// 在这里，我们将 VerbosityLevel 设置为 2，表示输出详细的调试信息；
+	// 将 Out 设置为 response 对象，表示将响应数据输出到 response 对象中；
+	// 将 Formatter 设置为之前创建的 formatter 对象，表示使用 JSON 格式输出数据。
 	handler := &grpcurl.DefaultEventHandler{
 		VerbosityLevel: 2,
 		Out:            response,
 		Formatter:      formatter,
 	}
-	// 反射调用
+	// 调用InvokeRPC方法，该方法会使用反射调用指定的服务方法，并将结果输出到 response 对象中。
 	if err = grpcurl.InvokeRPC(ctx, r.refSource, r.clientConn, fmt.Sprintf("%s/%s", serviceName, methodName), md, handler, rf.Next); err != nil {
 		return nil, err
 	}
-	// 处理返回值
+	// 将response对象中的数据转换成一个 map[string]interface{} 类型的对象，并返回给调用者。
 	res := make(map[string]interface{})
 	_ = json.Unmarshal(response.Body(), &res)
 	return res, nil

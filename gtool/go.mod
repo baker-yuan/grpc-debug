@@ -22,3 +22,8 @@ require (
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
 )
+
+replace (
+	github.com/fullstorydev/grpcurl => /Users/yuanyu/code/go-study/grpcurl
+	google.golang.org/grpc => /Users/yuanyu/code/go-study/grpc-go
+)
